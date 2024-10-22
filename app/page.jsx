@@ -3,7 +3,7 @@
 import { Select } from "@/Components/Select";
 import { Slider } from "@/Components/Slider";
 import { useSortingAlgorithmContext } from "./VisualizerContext";
-import { sortingAlgorithmsData } from "@/lib/utils";
+import { generateAnimationArray, sortingAlgorithmsData } from "@/lib/utils";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -16,17 +16,16 @@ export default function Home() {
     setSelectedAlgorithm,
     requiresReset,
     resetArrayAndAnimation,
+    runAnimation,
   } = useSortingAlgorithmContext();
 
   const handleStart = () => {
-    
-  };
-
-  useEffect(() => {
     if (requiresReset) {
-      resetArrayAndAnimation(); // Reset array if required
+      resetArrayAndAnimation();
+      return;
     }
-  }, [requiresReset, resetArrayAndAnimation]);
+    generateAnimationArray(selectedAlgorithm, isSorting, array, runAnimation);
+  };
 
   return (
     <main className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
@@ -45,8 +44,19 @@ export default function Home() {
                 value={animationSpeed}
                 handleChange={(e) => setAnimationSpeed(e.target.value)}
               />
-              <Select value={selectedAlgorithm} disabled={isSorting} onChange={(e)=>setSelectedAlgorithm(e.target.value)}/>
-              <button onClick={handleStart} disabled={isSorting}>Start</button>
+              <Select
+                value={selectedAlgorithm}
+                disabled={isSorting}
+                onChange={(e) => setSelectedAlgorithm(e.target.value)}
+              />
+              <div className="font-sans text-sm tracking-widest uppercase text-[#2363a2] cursor-pointer border-3 border-[#2363a2] px-2 py-1 shadow-[1px_1px_0px_0px,2px_2px_0px_0px,3px_3px_0px_0px,4px_4px_0px_0px,5px_5px_0px_0px] relative select-none active:shadow-none active:top-[5px] active:left-[5px] md:px-3">
+                <button
+                  className="flex items-center justify-center disabled:cursor-none"
+                  onClick={handleStart}
+                >
+                  {requiresReset ? <span>Reset</span> : <span>Start</span>}
+                </button>
+              </div>
             </div>
             <div className="hidden sm:flex absolute top-[120%] left-0 w-full">
               <div className="flex w-full text-gray-400 p-4 rounded border border-system-purple20 bg-system-purple80 bg-opacity-10 gap-6">
@@ -85,6 +95,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {/*Array part*/}
           <div className="relative h-[calc(100vh-66px)] w-full">
             <div className="absolute bottom-[32px] w-full mx-auto left-0 right-0 flex justify-center items-end">
               {array.map((value, index) => (

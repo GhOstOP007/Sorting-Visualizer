@@ -4,13 +4,13 @@ import React from 'react'
 
 import { MAX_ANIMATION_SPEED, MNI_ANIMATION_SPEED } from '@/lib/utils';
 
-export const Slider = (
+export const Slider = ({
   min = MNI_ANIMATION_SPEED,
   max = MAX_ANIMATION_SPEED,
   step = 10,
   value,
   handleChange,
-  isDisabled = false,
+  isDisabled = false,}
 ) => {
   return (
     <div className='flex gap-2 items-center justify-center'>

@@ -4,7 +4,6 @@ import { algorithmOptions } from '@/lib/utils';
 import React from 'react'
 
 export const Select = ({
-    options,
     defaultValue,
     onChange,
     isDisabled = false,

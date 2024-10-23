@@ -4,7 +4,7 @@ import {
   generateRandomNumberFromInterval,
   MAX_ANIMATION_SPEED,
 } from "@/lib/utils";
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const SortingAlgorithmContext = createContext(undefined);
 
@@ -15,6 +15,7 @@ export const SortingAlgorithmProvider = ({ children }) => {
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const [animationSpeed, setAnimationSpeed] = useState(MAX_ANIMATION_SPEED / 2);
   const requiresReset = isAnimationComplete || isSorting; 
+  const [activeIndexes, setActiveIndexes] = useState([]);
 
   useEffect(() => {
     resetArrayAndAnimation();
@@ -43,86 +44,19 @@ export const SortingAlgorithmProvider = ({ children }) => {
     setArray(tempArray);
     setIsSorting(false);
     setIsAnimationComplete(false);
+    setActiveIndexes([]);
   };
 
-  const highestId = setTimeout(() => {
+ /* const highestId = setTimeout(() => {
     for (let i = highestId; i >= 0; i--) {
       clearInterval(i);
     }
-  }, 0);
+  }, 0);*/
 
-  setTimeout(() => {
-    const arrLines = document.querySelectorAll(".array-line");
-    for (let i = 0; i < arrLines.length; i++) {
-      arrLines[i].classList.remove("change-line-color");
-      arrLines[i].classList.add("default-line-color");
-    }
-  }, 0);
-
-
-  const runAnimation = (animations) => {
-    setIsSorting(true);
-
-    const inverseSpeed = (1 / animationSpeed) * 200;
-    
-    const arrLines = document.getElementsByClassName("array-line");
-  
-    const updateClassList = (indexes, addClassName, removeClassName) => {
-      indexes.forEach((index) => {
-        arrLines[index].classList.add(addClassName);
-        arrLines[index].classList.remove(removeClassName);
-      });
-    };
-  
-    const updateHeightValue = (lineIndex, newHeight) => {
-      if (newHeight !== undefined) {
-        arrLines[lineIndex].style.height = `${newHeight}px`;
-      }
-    };
-  
-    animations.forEach((animation, index) => {
-      setTimeout(() => {
-        const [lineIndexes, isSwap] = animation;
-        
-        if (!isSwap) {
-          updateClassList(lineIndexes, "change-line-color", "default-line-color");
-  
-          setTimeout(() => {
-            updateClassList(lineIndexes, "default-line-color", "change-line-color");
-          }, inverseSpeed);
-        } else {
-          const [lineIndex, newHeight] = lineIndexes;
-          updateHeightValue(lineIndex, newHeight);
-        }
-      }, index * inverseSpeed);
-      console.log(animation);
-    });
-  
-    // Timeout for the final animation step
-    const finalTimeout = animations.length * inverseSpeed;
-    setTimeout(() => {
-     /* Array.from(arrLines).forEach((line) => {
-        line.classList.add("pulse-animation", "change-line-color");
-        line.classList.remove("default-line-color");
-      });*/
-  
-      // Reset the state after the final pulse
-      setTimeout(() => {
-       /* Array.from(arrLines).forEach((line) => {
-          line.classList.remove("pulse-animation", "change-line-color");
-          line.classList.add("default-line-color");
-        });*/
-  
-        // Mark sorting as complete
-        setIsSorting(false);
-        setIsAnimationComplete(true);
-      }, 1000); // Duration for the final pulse
-    }, finalTimeout+1000);
-  };
-  
 
   const value = {
     array,
+    setArray,
     selectedAlgorithm,
     setSelectedAlgorithm,
     isSorting,
@@ -132,7 +66,9 @@ export const SortingAlgorithmProvider = ({ children }) => {
     isAnimationComplete,
     resetArrayAndAnimation,
     requiresReset,
-    runAnimation,
+    activeIndexes, 
+    setActiveIndexes,
+    setIsAnimationComplete,
   };
 
   return (
